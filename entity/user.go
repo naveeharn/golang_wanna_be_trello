@@ -10,7 +10,7 @@ type User struct {
 	Password    string    `json:"-" gorm:"->;<-;not null;type:varchar(128)"`
 	BirthDate   time.Time `json:"birthDate"`
 	Phone       string    `json:"phone" gorm:"type:varchar(12)"`
-	CountryCode string    `json:"countryCode" gorm:"type:varchar(3)"`
+	CountryCode string    `json:"countryCode" gorm:"type:varchar(2)"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 	AccessToken string    `json:"accessToken,omitempty" gorm:"-"`
