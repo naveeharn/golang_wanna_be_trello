@@ -34,7 +34,7 @@ func SetupDatabaseConnection() *gorm.DB {
 	err = db.AutoMigrate()
 
 	if err != nil {
-		panic("")
+		panic("Failed to migrate from entities to postgres database")
 	}
 	log.Println("Succeeded to connect postgres database")
 	return db
