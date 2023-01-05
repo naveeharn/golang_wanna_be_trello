@@ -6,13 +6,14 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/naveeharn/golang_wanna_be_trello/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func SetupDatabaseConnection() *gorm.DB {
 	if err := godotenv.Load(); err != nil {
-		panic("Fasiiled to load .env file")
+		panic("Failed to load .env file")
 	}
 
 	pg_username := os.Getenv("POSTGRES_USERNAME")
