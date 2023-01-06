@@ -1,9 +1,12 @@
 package repository
 
 import (
+	"fmt"
 	"log"
+	"runtime"
 
 	"github.com/naveeharn/golang_wanna_be_trello/entity"
+	"github.com/naveeharn/golang_wanna_be_trello/helper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -16,6 +19,7 @@ type UserRepository interface {
 	IsDuplicateEmail(email string) (tx *gorm.DB)
 	GetUserByEmail(email string) (entity.User, error)
 	GetUserById(userId string) (entity.User, error)
+	ResetPassword(user entity.User) (entity.User, error)
 }
 
 type userConnection struct {
@@ -31,9 +35,9 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (db *userConnection) CreateUser(user entity.User) (entity.User, error) {
 	user.Id = primitive.NewObjectID().Hex()
 	user.Password = hashAndSalt(user.Password)
-	result := db.connection.Create(&user)
-	if result.Error != nil {
-		return entity.User{}, result.Error
+	transaction := db.connection.Create(&user)
+	if transaction.Error != nil {
+		return entity.User{}, transaction.Error
 	}
 	return user, nil
 }
@@ -48,7 +52,16 @@ func (db *userConnection) GetUserByEmail(email string) (entity.User, error) {
 }
 
 func (db *userConnection) GetUserById(userId string) (entity.User, error) {
-	panic("unimplemented")
+	user := entity.User{}
+
+	transaction := db.connection.Find(&user, "id = ?", userId)
+	if transaction.Error != nil {
+		return entity.User{}, transaction.Error
+	}
+	if user == (entity.User{}) {
+		return entity.User{}, fmt.Errorf("user by id not found")
+	}
+	return user, nil
 }
 
 func (db *userConnection) IsDuplicateEmail(email string) (tx *gorm.DB) {
@@ -61,7 +74,16 @@ func (db *userConnection) IsDuplicateEmail(email string) (tx *gorm.DB) {
 }
 
 func (db *userConnection) UpdateUser(user entity.User) (entity.User, error) {
-	panic("unimplemented")
+	transaction := db.connection.Save(&user)
+	if transaction.Error != nil {
+		return entity.User{}, transaction.Error
+	}
+	return user, nil
+}
+
+func (db *userConnection) ResetPassword(user entity.User) (entity.User, error) {
+	user.Password = hashAndSalt(user.Password)
+	return db.UpdateUser(user)
 }
 
 func (db *userConnection) VerifyCredential(email, password string) interface{} {
@@ -76,6 +98,7 @@ func (db *userConnection) VerifyCredential(email, password string) interface{} {
 func hashAndSalt(password string) string {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		helper.LoggerErrorPath(runtime.Caller(0))
 		log.Fatalf("Failed to hash a password %s\n error:%s", password, err.Error())
 	}
 	return string(hashed)
