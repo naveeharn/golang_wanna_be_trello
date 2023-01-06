@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/naveeharn/golang_wanna_be_trello/config"
 	"github.com/naveeharn/golang_wanna_be_trello/controller"
-	"github.com/naveeharn/golang_wanna_be_trello/middleware"
 	"github.com/naveeharn/golang_wanna_be_trello/repository"
 	"github.com/naveeharn/golang_wanna_be_trello/service"
 	"gorm.io/gorm"
@@ -42,7 +41,8 @@ func main() {
 
 	authRoutes := routers.Group("api/auth")
 	{
-		authRoutes.POST("/register", middleware.AuthorizeJWT(jwtService), authController.Register)
+		authRoutes.POST("/register", authController.Register)
+		authRoutes.POST("/login", authController.Login)
 	}
 
 	routers.Run(":4011")
