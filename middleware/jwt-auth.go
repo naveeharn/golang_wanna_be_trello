@@ -21,11 +21,18 @@ func AuthorizeJWT(jwtService service.JWTService, userService service.UserService
 			return
 		}
 		token, err := jwtService.ValidateToken(strings.TrimPrefix(authHeader, "Bearer "))
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
+		if err != nil {
 			helper.LoggerErrorPath(runtime.Caller(0))
-			log.Panicln(err.Error())
+			log.Println(err.Error())
 			response := helper.CreateErrorResponse("Token is not valid", err.Error(), nil)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			helper.LoggerErrorPath(runtime.Caller(0))
+			log.Println(err.Error())
+			response := helper.CreateErrorResponse("Token can not parse", err.Error(), nil)
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
@@ -35,7 +42,7 @@ func AuthorizeJWT(jwtService service.JWTService, userService service.UserService
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
-		// user, err := userService.GetUserById(userId)
+		// _, err = userService.GetUserById(userId)
 		// if err != nil {
 		// 	response := helper.CreateErrorResponse("userId from accessToken does not exists", err.Error(), nil)
 		// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
