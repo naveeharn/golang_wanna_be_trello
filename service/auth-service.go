@@ -2,10 +2,12 @@ package service
 
 import (
 	"log"
+	"runtime"
 
 	"github.com/mashingan/smapping"
 	"github.com/naveeharn/golang_wanna_be_trello/dto"
 	"github.com/naveeharn/golang_wanna_be_trello/entity"
+	"github.com/naveeharn/golang_wanna_be_trello/helper"
 	"github.com/naveeharn/golang_wanna_be_trello/repository"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,6 +32,7 @@ func NewAuthService(userRepository repository.UserRepository) AuthService {
 func (service *authService) CreateUser(user dto.UserCreateDTO) (entity.User, error) {
 	userBeforeCreate := entity.User{}
 	if err := smapping.FillStruct(&userBeforeCreate, smapping.MapFields(&user)); err != nil {
+		helper.LoggerErrorPath(runtime.Caller(0))
 		log.Fatalf("Failed to map struct: %v", err)
 	}
 	createdUser, err := service.userRepository.CreateUser(userBeforeCreate)
