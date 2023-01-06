@@ -9,7 +9,7 @@ localhost:4011/api
     /auth
         POST    /register
         POST    /login
-    /users
+    /user
         GET     /
         GET     /:id
         PUT     /:id
