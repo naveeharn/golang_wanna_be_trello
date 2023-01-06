@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/naveeharn/golang_wanna_be_trello/dto"
+	"github.com/naveeharn/golang_wanna_be_trello/entity"
 	"github.com/naveeharn/golang_wanna_be_trello/helper"
 	"github.com/naveeharn/golang_wanna_be_trello/service"
 )
@@ -28,7 +28,25 @@ func NewAuthController(authService service.AuthService, jwtService service.JWTSe
 }
 
 func (controller *authController) Login(ctx *gin.Context) {
-	panic("unimplemented")
+	loginDTO := dto.LoginDTO{}
+
+	if err := ctx.ShouldBind(&loginDTO); err != nil {
+		response := helper.CreateErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	verifiedUser := controller.authService.VerifyCredential(loginDTO.Email, loginDTO.Password)
+	user, ok := verifiedUser.(entity.User)
+	if !ok {
+		response := helper.CreateErrorResponse("Please check again credential", "Invalid Credential", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	user.AccessToken = controller.jwtService.GenerateToken(user.Id)
+	response := helper.CreateResponse(true, "Login response complete", user)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (controller *authController) Register(ctx *gin.Context) {
@@ -39,7 +57,6 @@ func (controller *authController) Register(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	log.Printf("%#v", registerDTO.BirthDate)
 
 	if controller.authService.IsDuplicateEmail(registerDTO.Email) {
 		response := helper.CreateErrorResponse("Failed to process request", "Duplicated email", helper.EmptyObj{})
