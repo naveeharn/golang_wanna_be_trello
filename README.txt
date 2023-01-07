@@ -22,8 +22,8 @@ localhost:4011/api
 User
 
 Team
-    id          string(ObjectId)
-    ownerId     string(ObjectId)
+    id          string
+    ownerId     string
     owner       User
     name        string
     members     *[]User
@@ -31,12 +31,12 @@ Team
     updatedAt   time.Time
 
 MembersTeam
-    userId      string(ObjectId)
-    teamId      string(ObjectId)
+    userId      string
+    teamId      string
 
 Note
-    id          string(ObjectId)
-    ownerId     string(ObjectId)
+    id          string
+    ownerId     string
     owner       User
     topic       string
     description string
