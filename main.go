@@ -19,15 +19,18 @@ var (
 
 	// repositories
 	userRepository repository.UserRepository = repository.NewUserRepository(db)
+	teamRepository repository.TeamRepository = repository.NewTeamRepository(db)
 
 	// services
 	authService service.AuthService = service.NewAuthService(userRepository)
 	userService service.UserService = service.NewUserService(userRepository)
 	jwtService  service.JWTService  = service.NewJWTService()
+	teamService service.TeamService = service.NewTeamService(teamRepository)
 
 	// controllers
 	authController controller.AuthController = controller.NewAuthController(authService, jwtService)
 	userController controller.UserController = controller.NewUserController(userService)
+	teamController controller.TeamController = controller.NewTeamController(teamService)
 )
 
 func main() {
@@ -53,6 +56,11 @@ func main() {
 		userRoutes.PUT("/", middleware.AuthorizeJWT(jwtService, userService), userController.UpdateUser)
 		userRoutes.PUT("/reset-password", middleware.AuthorizeJWT(jwtService, userService), userController.ResetPassword)
 
+	}
+
+	teamRoutes := routers.Group("api/team")
+	{
+		teamRoutes.POST("/", middleware.AuthorizeJWT(jwtService, userService), teamController.CreateTeam)
 	}
 
 	routers.Run(":4011")

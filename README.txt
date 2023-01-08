@@ -34,12 +34,19 @@ MembersTeam
     userId      string
     teamId      string
 
+Dashboard
+    id string
+    ownerTeamId string
+    ownerTeam Team
+    notes *[]Note
+
 Note
     id          string
     ownerId     string
     owner       User
     topic       string
     description string
+    status      bool
     createdAt   time.Time
     updatedAt   time.Time
     deadlineAt  time.Time
