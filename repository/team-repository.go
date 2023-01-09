@@ -2,11 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"log"
-	"runtime"
 
 	"github.com/naveeharn/golang_wanna_be_trello/entity"
-	"github.com/naveeharn/golang_wanna_be_trello/helper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 )
@@ -84,23 +81,20 @@ func (db *teamConnection) GetTeamsByOwnerUserId(ownerUserId string) ([]entity.Te
 }
 
 func (db *teamConnection) AddMember(teamId, ownerUserId, memberEmail string) (entity.Team, error) {
-	team := entity.Team{Id: teamId, OwnerUserId: ownerUserId}
+	team := entity.Team{Id: teamId}
 	err := db.connection.Transaction(func(transaction *gorm.DB) error {
 		user := entity.User{Email: memberEmail}
 		transaction.Where(&user).First(&user)
 		if user.Id == "" {
-			return fmt.Errorf("owner id doesn't found")
+			return fmt.Errorf("email doesn't found")
 		}
 
-		transaction.Where(&team).First(&team)
-		if transaction.Error != nil {
-			helper.LoggerErrorPath(runtime.Caller(0))
-			return transaction.Error
+		transaction.Where(&team).First(&team, "owner_user_id = ?", ownerUserId)
+		if team.OwnerUserId == "" {
+			return fmt.Errorf("user id doesn't allow to add new member to team")
 		}
 
 		if err := transaction.Model(&team).Association("Members").Append(&entity.User{Id: user.Id}); err != nil {
-			helper.LoggerErrorPath(runtime.Caller(0))
-			log.Println(err.Error())
 			return err
 		}
 
@@ -110,6 +104,7 @@ func (db *teamConnection) AddMember(teamId, ownerUserId, memberEmail string) (en
 		}
 		return nil
 	})
+
 	if err != nil {
 		return entity.Team{}, err
 	}
