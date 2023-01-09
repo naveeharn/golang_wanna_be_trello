@@ -61,6 +61,8 @@ func main() {
 	teamRoutes := routers.Group("api/team")
 	{
 		teamRoutes.POST("/", middleware.AuthorizeJWT(jwtService, userService), teamController.CreateTeam)
+		teamRoutes.GET("/:id", middleware.AuthorizeJWT(jwtService, userService), teamController.GetTeamById)
+		teamRoutes.GET("/", middleware.AuthorizeJWT(jwtService, userService), teamController.GetTeamsByOwnerUserId)
 	}
 
 	routers.Run(":4011")

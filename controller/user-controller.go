@@ -30,7 +30,7 @@ func NewUserController(userService service.UserService) UserController {
 func (controller *userController) GetUserById(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	if userId == "" {
-		response := helper.CreateErrorResponse("Failed to process request", "User id fron JWT token doesn't found", helper.EmptyObj{})
+		response := helper.CreateErrorResponse("Failed to process request", "User id doesn't found", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusConflict, response)
 		return
 	}
