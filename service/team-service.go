@@ -13,7 +13,7 @@ type TeamService interface {
 	CreateTeam(team dto.TeamCreateDTO) (entity.Team, error)
 	GetTeamById(teamId, userId string) (entity.Team, error)
 	GetTeamsByOwnerUserId(ownerUserId string) ([]entity.Team, error)
-	AddMember(team entity.Team) (entity.Team, error)
+	AddMember(teamId, ownerUserId, memberEmail string) (entity.Team, error)
 }
 
 type teamService struct {
@@ -26,8 +26,9 @@ func NewTeamService(teamRepository repository.TeamRepository) TeamService {
 	}
 }
 
-func (service *teamService) AddMember(team entity.Team) (entity.Team, error) {
-	panic("unimplemented")
+func (service *teamService) AddMember(teamId, ownerUserId, memberEmail string) (entity.Team, error) {
+	team, err := service.teamRepository.AddMember(teamId, ownerUserId, memberEmail)
+	return team, err
 }
 
 func (service *teamService) CreateTeam(team dto.TeamCreateDTO) (entity.Team, error) {

@@ -6,6 +6,5 @@ type TeamCreateDTO struct {
 }
 
 type TeamAddMemberDTO struct {
-	TeamId string `json:"teamId" binding:"required"`
-	Email  string `json:"email" binding:"required,email"`
+	Email string `json:"email" binding:"required,email"`
 }
