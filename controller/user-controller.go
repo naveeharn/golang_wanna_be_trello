@@ -28,7 +28,7 @@ func NewUserController(userService service.UserService) UserController {
 }
 
 func (controller *userController) GetUserById(ctx *gin.Context) {
-	userId := ctx.Param("id")
+	userId := ctx.Param("userId")
 	if userId == "" {
 		response := helper.CreateErrorResponse("Failed to process request", "User id doesn't found", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusConflict, response)

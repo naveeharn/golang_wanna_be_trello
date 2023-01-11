@@ -54,7 +54,7 @@ func (controller *teamController) CreateTeam(ctx *gin.Context) {
 }
 
 func (controller *teamController) GetTeamById(ctx *gin.Context) {
-	teamId := ctx.Param("id")
+	teamId := ctx.Param("teamId")
 	if teamId == "" {
 		response := helper.CreateErrorResponse("Failed to process request", "Team id doesn't found", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusConflict, response)
@@ -104,7 +104,7 @@ func (controller *teamController) AddMember(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	teamId := ctx.Param("id")
+	teamId := ctx.Param("teamId")
 	if teamId == "" {
 		response := helper.CreateErrorResponse("Failed to process request", "Team id doesn't found", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusConflict, response)

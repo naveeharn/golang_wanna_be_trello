@@ -27,6 +27,7 @@ Team
     owner       User
     name        string
     members     *[]User
+    dashboards  *[]Dashboard
     createdAt   time.Time
     updatedAt   time.Time
 
@@ -35,22 +36,33 @@ MembersTeam
     teamId      string
 
 Dashboard
-    id string
-    ownerTeamId string
-    ownerTeam Team
-    notes *[]Note
+    id          string
+    teamId      string
+    team        Team
+    ownerUserId User
+    ownerUser   User
+    notes       *[]Note
 
 Note
     id          string
+    teamId      string
     ownerId     string
     owner       User
     topic       string
     description string
     status      bool
+    comments     *[]Comment
     createdAt   time.Time
     updatedAt   time.Time
     deadlineAt  time.Time
 
-
+Comment
+    id          string
+    teamId      string
+    noteId      string
+    userId      string
+    description string
+    createdAt   time.Time
+    updatedAt   time.Time
 
 
