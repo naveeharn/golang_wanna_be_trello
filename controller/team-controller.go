@@ -74,7 +74,7 @@ func (controller *teamController) GetTeamById(ctx *gin.Context) {
 		return
 	}
 
-	response := helper.CreateResponse(true, "Create team response complete", team)
+	response := helper.CreateResponse(true, "Get team by id response complete", team)
 	ctx.JSON(http.StatusCreated, response)
 }
 
@@ -124,6 +124,6 @@ func (controller *teamController) AddMember(ctx *gin.Context) {
 		return
 	}
 
-	response := helper.CreateResponse(true, "Create team response complete", team)
+	response := helper.CreateResponse(true, "Add new member response complete", team)
 	ctx.JSON(http.StatusCreated, response)
 }

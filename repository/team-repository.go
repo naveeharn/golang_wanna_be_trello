@@ -64,7 +64,7 @@ func (db *teamConnection) GetTeamById(teamId, userId string) (entity.Team, error
 	if team.Id == "" {
 		return entity.Team{}, fmt.Errorf("user id cann't access to team data by team id")
 	}
-	transaction = transaction.Preload("OwnerUser").Preload("Members").Find(&team)
+	transaction = transaction.Preload("OwnerUser").Preload("Members").Preload("Dashboards").Find(&team)
 	if transaction.Error != nil {
 		return entity.Team{}, transaction.Error
 	}
@@ -73,7 +73,7 @@ func (db *teamConnection) GetTeamById(teamId, userId string) (entity.Team, error
 
 func (db *teamConnection) GetTeamsByOwnerUserId(ownerUserId string) ([]entity.Team, error) {
 	teams := []entity.Team{}
-	transaction := db.connection.Preload("OwnerUser").Preload("Members").Find(&teams, "owner_user_id = ?", ownerUserId)
+	transaction := db.connection.Preload("OwnerUser").Preload("Members").Preload("Dashboards").Find(&teams, "owner_user_id = ?", ownerUserId)
 	if transaction.Error != nil {
 		return []entity.Team{}, transaction.Error
 	}
@@ -98,7 +98,7 @@ func (db *teamConnection) AddMember(teamId, ownerUserId, memberEmail string) (en
 			return err
 		}
 
-		transaction.Preload("OwnerUser").Preload("Members").Find(&team)
+		transaction.Preload("OwnerUser").Preload("Members").Preload("Dashboards").Find(&team)
 		if transaction.Error != nil {
 			return transaction.Error
 		}

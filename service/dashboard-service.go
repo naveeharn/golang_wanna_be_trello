@@ -11,6 +11,7 @@ import (
 
 type DashboardService interface {
 	CreateDashboard(dashboard dto.DashboardCreateDTO) (entity.Team, error)
+	UpdateDashboard(dashboard dto.DashboardNameUpdateDTO) (entity.Team, error)
 }
 
 type dashboardService struct {
@@ -33,6 +34,21 @@ func (service *dashboardService) CreateDashboard(dashboard dto.DashboardCreateDT
 		return entity.Team{}, err
 	}
 	updatedTeam, err := service.dashboardRepository.CreateDashboard(dashboardBeforeCreate)
+	if err != nil {
+		return entity.Team{}, err
+	}
+	return updatedTeam, nil
+}
+func (service *dashboardService) UpdateDashboard(dashboard dto.DashboardNameUpdateDTO) (entity.Team, error) {
+	if dashboard.OwnerUserId == "" {
+		return entity.Team{}, fmt.Errorf("dashboard.OwnerUserId doesn't exists")
+	}
+	dashboardBeforeUpdate := entity.Dashboard{}
+	err := smapping.FillStruct(&dashboardBeforeUpdate, smapping.MapFields(&dashboard))
+	if err != nil {
+		return entity.Team{}, err
+	}
+	updatedTeam, err := service.dashboardRepository.UpdateDashboard(dashboardBeforeUpdate)
 	if err != nil {
 		return entity.Team{}, err
 	}

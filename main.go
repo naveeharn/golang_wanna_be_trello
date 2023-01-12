@@ -72,6 +72,7 @@ func main() {
 	dashboardRoutes := routers.Group("api/team/:teamId/dashboard")
 	{
 		dashboardRoutes.POST("/", middleware.AuthorizeJWT(jwtService, userService), dashboardController.CreateDashboard)
+		dashboardRoutes.PUT("/:dashboardId", middleware.AuthorizeJWT(jwtService, userService), dashboardController.UpdateDashboard)
 	}
 
 	routers.Run(":4011")
