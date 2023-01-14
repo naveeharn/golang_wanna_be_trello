@@ -7,5 +7,5 @@ type Dashboard struct {
 	Name        string `json:"name" gorm:"type:varchar(128);index:team_dashboard_name,unique"`
 	OwnerUserId string `json:"-" gorm:"not null"`
 	OwnerUser   *User  `json:"ownerUser,omitempty" gorm:"foreignkey:OwnerUserId;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
-	// notes *[]Note
+	Notes       []Note `json:"notes,omitempty" gorm:"many2many:team_notes;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
 }

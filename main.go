@@ -21,6 +21,7 @@ var (
 	userRepository      repository.UserRepository      = repository.NewUserRepository(db)
 	teamRepository      repository.TeamRepository      = repository.NewTeamRepository(db)
 	dashboardRepository repository.DashboardRepository = repository.NewDashboardRepository(db)
+	noteRepository      repository.NoteRepository      = repository.NewNoteRepository(db)
 
 	// services
 	authService      service.AuthService      = service.NewAuthService(userRepository)
@@ -28,12 +29,14 @@ var (
 	jwtService       service.JWTService       = service.NewJWTService()
 	teamService      service.TeamService      = service.NewTeamService(teamRepository)
 	dashboardService service.DashboardService = service.NewDashboardService(dashboardRepository)
+	noteService      service.NoteService      = service.NewNoteService(noteRepository)
 
 	// controllers
 	authController      controller.AuthController      = controller.NewAuthController(authService, jwtService)
 	userController      controller.UserController      = controller.NewUserController(userService)
 	teamController      controller.TeamController      = controller.NewTeamController(teamService)
 	dashboardController controller.DashboardController = controller.NewDashboardController(dashboardService)
+	noteController      controller.NoteController      = controller.NewNoteController(noteService)
 )
 
 func main() {
@@ -52,27 +55,39 @@ func main() {
 		authRoutes.POST("/login", authController.Login)
 	}
 
-	userRoutes := routers.Group("api/user")
+	userRoutes := routers.Group("api/user", middleware.AuthorizeJWT(jwtService, userService))
 	{
-		userRoutes.GET("/", middleware.AuthorizeJWT(jwtService, userService), userController.Profile)
-		userRoutes.GET("/:userId", middleware.AuthorizeJWT(jwtService, userService), userController.GetUserById)
-		userRoutes.PUT("/", middleware.AuthorizeJWT(jwtService, userService), userController.UpdateUser)
-		userRoutes.PUT("/reset-password", middleware.AuthorizeJWT(jwtService, userService), userController.ResetPassword)
+		userRoutes.GET("/", userController.Profile)
+		userRoutes.GET("/:userId", userController.GetUserById)
+		userRoutes.PUT("/", userController.UpdateUser)
+		userRoutes.PUT("/reset-password", userController.ResetPassword)
 
 	}
 
-	teamRoutes := routers.Group("api/team")
+	teamRoutes := routers.Group("api/team", middleware.AuthorizeJWT(jwtService, userService))
 	{
-		teamRoutes.POST("/", middleware.AuthorizeJWT(jwtService, userService), teamController.CreateTeam)
-		teamRoutes.GET("/:teamId", middleware.AuthorizeJWT(jwtService, userService), teamController.GetTeamById)
-		teamRoutes.GET("/", middleware.AuthorizeJWT(jwtService, userService), teamController.GetTeamsByOwnerUserId)
-		teamRoutes.POST("/:teamId", middleware.AuthorizeJWT(jwtService, userService), teamController.AddMember)
+		teamRoutes.POST("/", teamController.CreateTeam)
+		teamRoutes.GET("/:teamId", teamController.GetTeamById)
+		teamRoutes.GET("/", teamController.GetTeamsByOwnerUserId)
+		teamRoutes.POST("/:teamId", teamController.AddMember)
+
+		// teamRoutes.Group(":teamId/dashboard")
+		// {
+		// 	teamRoutes.POST("/", dashboardController.CreateDashboard)
+		// 	teamRoutes.PUT("/:dashboardId", dashboardController.UpdateDashboard)
+		// }
 	}
 
-	dashboardRoutes := routers.Group("api/team/:teamId/dashboard")
+	dashboardRoutes := routers.Group("api/team/:teamId/dashboard", middleware.AuthorizeJWT(jwtService, userService))
 	{
-		dashboardRoutes.POST("/", middleware.AuthorizeJWT(jwtService, userService), dashboardController.CreateDashboard)
-		dashboardRoutes.PUT("/:dashboardId", middleware.AuthorizeJWT(jwtService, userService), dashboardController.UpdateDashboard)
+		dashboardRoutes.POST("/", dashboardController.CreateDashboard)
+		dashboardRoutes.PUT("/:dashboardId", dashboardController.UpdateDashboard)
+	}
+
+	noteRoutes := routers.Group("api/team/:teamId/dashboard/:dashboardId/note", middleware.AuthorizeJWT(jwtService, userService))
+	{
+		noteRoutes.POST("/", noteController.CreateNote)
+		noteRoutes.PUT("/:noteId", noteController.UpdateNote)
 	}
 
 	routers.Run(":4011")

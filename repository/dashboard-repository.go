@@ -34,6 +34,8 @@ func (db *dashboardConnection) CreateDashboard(dashboard entity.Dashboard) (enti
 		if user.Id == "" {
 			return fmt.Errorf("user id doesn't found")
 		}
+		team.Id = dashboard.TeamId
+
 		transaction.Where(&team).First(&team, "owner_user_id = ?", dashboard.OwnerUserId)
 		if team.OwnerUserId == "" {
 			return fmt.Errorf("user id doesn't allow to create new dashboard to team")
@@ -42,10 +44,12 @@ func (db *dashboardConnection) CreateDashboard(dashboard entity.Dashboard) (enti
 		if transaction.Error != nil {
 			return transaction.Error
 		}
-		transaction.Model(&team).Association("Dashboards").Append(&dashboard)
-		if transaction.Error != nil {
-			return transaction.Error
+		if err := transaction.Model(&team).Association("Dashboards").Append(&dashboard); err != nil {
+			return err
 		}
+		// if transaction.Error != nil {
+		// 	return transaction.Error
+		// }
 		// team = entity.Team{Id: team.Id}
 		transaction.Preload("OwnerUser").Preload("Members").Preload("Dashboards"). /*Preload("Dashboards.OwnerUser").Preload("Dashboards.Team.OwnerUser")*/ Find(&team)
 		if transaction.Error != nil {
@@ -80,8 +84,8 @@ func (db *dashboardConnection) UpdateDashboard(dashboard entity.Dashboard) (enti
 			helper.LoggerErrorPath(runtime.Caller(0))
 			return transaction.Error
 		}
-		transaction.Preload("OwnerUser").Preload("Members").Preload("Dashboards").Find(&team)
-		// log.Printf("%#v\n\n", team)
+		team.Id = dashboardBeforeUpdate.TeamId
+		transaction.Preload("OwnerUser").Preload("Members").Preload("Dashboards").Preload("Dashboards.Notes").Find(&team)
 		if transaction.Error != nil {
 			helper.LoggerErrorPath(runtime.Caller(0))
 			return transaction.Error

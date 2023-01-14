@@ -12,6 +12,7 @@ import (
 type DashboardController interface {
 	CreateDashboard(ctx *gin.Context)
 	UpdateDashboard(ctx *gin.Context)
+	// CreateNote(ctx *gin.Context)
 }
 
 type dashboardController struct {
