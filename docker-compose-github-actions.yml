@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgresDatabase:
+    image: postgres:15.1-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - '4012:5432'
+    environment:
+      POSTGRES_USER: $${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: $${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: $${{ secrets.POSTGRES_DB }}
+    networks:
+      - postgresSite
+  postgresAdmin4:
+    depends_on:
+      - postgresDatabase
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - '8081:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: $${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+      PGADMIN_DEFAULT_PASSWORD: $${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+    networks:
+      - postgresSite
+
+networks:
+  postgresSite:
+
+volumes:
+  db_data:
