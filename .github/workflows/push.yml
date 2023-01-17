@@ -6,7 +6,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run docker-compose
-        run: docker-compose up -d
+        run: |
+          echo $pwd
+          echo pwd
+          # docker-compose -f "./../.." up -d
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
