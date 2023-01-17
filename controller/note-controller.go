@@ -41,7 +41,7 @@ func (controller *noteController) CreateNote(ctx *gin.Context) {
 	}
 	dashboardId := ctx.Param("dashboardId")
 	if dashboardId == "" {
-		response := helper.CreateErrorResponse("Failed to process request", "dashboardId doesn't found", helper.EmptyObj{})
+		response := helper.CreateErrorResponse("Failed to process request", "Dashboard id from note doesn't found", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusConflict, response)
 		return
 	}
@@ -50,7 +50,7 @@ func (controller *noteController) CreateNote(ctx *gin.Context) {
 	noteBeforeCreate.DashboardId = dashboardId
 	updatedDashboard, err := controller.noteService.CreateNote(noteBeforeCreate)
 	if err != nil {
-		response := helper.CreateErrorResponse("Failed to create new note by dashboard id", err.Error(), helper.EmptyObj{})
+		response := helper.CreateErrorResponse("Failed to create new note", err.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
@@ -58,10 +58,83 @@ func (controller *noteController) CreateNote(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
-func (controller *noteController) DeleteNote(ctx *gin.Context) {
+func (controller *noteController) UpdateNote(ctx *gin.Context) {
+	noteBeforeUpdate := dto.NoteUpdateDTO{}
+	if err := ctx.ShouldBind(&noteBeforeUpdate); err != nil {
+		response := helper.CreateErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
 
+	userId, ok := ctx.Get("userId")
+	if !ok || userId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "User id from JWT Token doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+	dashboardId := ctx.Param("dashboardId")
+	if dashboardId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "Dashboard id from note doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+	noteId := ctx.Param("noteId")
+	if noteId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "Dashboard id from note doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+
+	noteBeforeUpdate.Id = noteId
+	noteBeforeUpdate.OwnerUserId = userId.(string)
+	noteBeforeUpdate.DashboardId = dashboardId
+	updatedDashboard, err := controller.noteService.UpdateNote(noteBeforeUpdate)
+	if err != nil {
+		response := helper.CreateErrorResponse("Failed to update note by id", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+	response := helper.CreateResponse(true, "Update note response complete", updatedDashboard)
+	ctx.JSON(http.StatusCreated, response)
 }
 
-func (controller *noteController) UpdateNote(ctx *gin.Context) {
+func (controller *noteController) DeleteNote(ctx *gin.Context) {
+	noteBeforeDelete := dto.NoteDeleteDTO{}
+	if err := ctx.ShouldBind(&noteBeforeDelete); err != nil {
+		response := helper.CreateErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
 
+	userId, ok := ctx.Get("userId")
+	if !ok || userId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "User id from JWT Token doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+	dashboardId := ctx.Param("dashboardId")
+	if dashboardId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "Dashboard id from note doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+	noteId := ctx.Param("noteId")
+	if noteId == "" {
+		response := helper.CreateErrorResponse("Failed to process request", "Dashboard id from note doesn't found", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusConflict, response)
+		return
+	}
+	noteBeforeDelete.Id = noteId
+	noteBeforeDelete.DashboardId = dashboardId
+	noteBeforeDelete.OwnerUserId = userId.(string)
+
+	// log.Printf("\n\n%#v\n\n", noteBeforeDelete)
+	updatedDashboard, err := controller.noteService.DeleteNote(noteBeforeDelete)
+	if err != nil {
+		response := helper.CreateErrorResponse("Failed to delete note by id", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+	response := helper.CreateResponse(true, "Update note response complete", updatedDashboard)
+	ctx.JSON(http.StatusCreated, response)
 }

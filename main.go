@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -88,8 +89,12 @@ func main() {
 	{
 		noteRoutes.POST("/", noteController.CreateNote)
 		noteRoutes.PUT("/:noteId", noteController.UpdateNote)
+		noteRoutes.DELETE("/:noteId", noteController.DeleteNote)
 	}
 
-	routers.Run(":4011")
+	err := routers.Run(":4011")
+	if err != nil {
+		log.Fatal("Something went wrong")
+	}
 
 }

@@ -42,9 +42,35 @@ func (service *noteService) CreateNote(note dto.NoteCreateDTO) (entity.Dashboard
 }
 
 func (service *noteService) DeleteNote(note dto.NoteDeleteDTO) (entity.Dashboard, error) {
-	return entity.Dashboard{}, nil
+	if note.OwnerUserId == "" {
+		return entity.Dashboard{}, fmt.Errorf("Note.OwnerUserId doesn't exists")
+	}
+	noteBeforeDelete := entity.Note{}
+	err := smapping.FillStruct(&noteBeforeDelete, smapping.MapFields(&note))
+	if err != nil {
+		return entity.Dashboard{}, err
+	}
+	updatedDashboard, err := service.noteRepository.DeleteNote(noteBeforeDelete)
+	if err != nil {
+		return entity.Dashboard{}, err
+	}
+
+	return updatedDashboard, nil
 }
 
 func (service *noteService) UpdateNote(note dto.NoteUpdateDTO) (entity.Dashboard, error) {
-	return entity.Dashboard{}, nil
+	if note.OwnerUserId == "" {
+		return entity.Dashboard{}, fmt.Errorf("Note.OwnerUserId doesn't exists")
+	}
+	noteBeforeUpdate := entity.Note{}
+	err := smapping.FillStruct(&noteBeforeUpdate, smapping.MapFields(&note))
+	if err != nil {
+		return entity.Dashboard{}, err
+	}
+	updatedDashboard, err := service.noteRepository.UpdateNote(noteBeforeUpdate)
+	if err != nil {
+		return entity.Dashboard{}, err
+	}
+
+	return updatedDashboard, nil
 }

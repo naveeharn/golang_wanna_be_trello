@@ -51,7 +51,7 @@ func (controller *dashboardController) CreateDashboard(ctx *gin.Context) {
 	dashboardBeforeCreate.TeamId = teamId
 	updatedTeam, err := controller.dashboardService.CreateDashboard(dashboardBeforeCreate)
 	if err != nil {
-		response := helper.CreateErrorResponse("Failed to process request", "Failed to create new team", helper.EmptyObj{})
+		response := helper.CreateErrorResponse("Failed to process request", "Failed to create new dashboard in team", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}

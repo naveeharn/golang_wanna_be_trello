@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 	"github.com/naveeharn/golang_wanna_be_trello/entity"
@@ -12,9 +13,21 @@ import (
 )
 
 func SetupDatabaseConnection() *gorm.DB {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(filepath.Join(".env")); err != nil {
 		panic("Failed to load .env file")
 	}
+	// os.Setenv("POSTGRES_USERNAME", "go_trello_01@postgresql.com")
+	// os.Setenv("POSTGRES_PASSWORD", "go_trello_01")
+	// os.Setenv("POSTGRES_HOSTNAME", "127.0.0.1")
+	// os.Setenv("POSTGRES_PORT", "4012")
+	// os.Setenv("POSTGRES_DB_NAME", "trello")
+	// os.Setenv("JWT_SECRET_KEY", "JWTtrelloSecret220105")
+	// defer os.Unsetenv("POSTGRES_USERNAME")
+	// defer os.Unsetenv("POSTGRES_PASSWORD")
+	// defer os.Unsetenv("POSTGRES_HOSTNAME")
+	// defer os.Unsetenv("POSTGRES_PORT")
+	// defer os.Unsetenv("POSTGRES_DB_NAME")
+	// defer os.Unsetenv("JWT_SECRET_KEY")
 
 	pg_username := os.Getenv("POSTGRES_USERNAME")
 	pg_password := os.Getenv("POSTGRES_PASSWORD")
