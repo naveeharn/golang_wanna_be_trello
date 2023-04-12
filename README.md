@@ -8,3 +8,8 @@
 ```go
     go mod
 ```
+
+### - approach 1
+```
+    go get <module name>
+```
