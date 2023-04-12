@@ -14,4 +14,5 @@
     go get <module name>
 ```
 
-'first commit'
+`first commit`
+`second commit`
