@@ -2,6 +2,7 @@
 
 ```bash
     go run main.go
+<<<<<<< HEAD
 ```
 
 ## go mod
@@ -13,3 +14,6 @@
 ```
     go get <module name>
 ```
+=======
+```
+>>>>>>> parent of 6659600 (Update README.md)
