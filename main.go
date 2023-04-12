@@ -43,10 +43,13 @@ var (
 func main() {
 	defer config.CloseDatabaseConnection(db)
 
+	gin.SetMode(gin.ReleaseMode)
 	routers := gin.Default()
 	routers.Use(cors.Default())
+	log.Println(">>>")
 
 	routers.GET("/", func(ctx *gin.Context) {
+		log.Println("hello")
 		ctx.JSON(http.StatusOK, gin.H{"message": "hello"})
 	})
 

@@ -25,6 +25,17 @@ services:
       PGADMIN_DEFAULT_PASSWORD: $${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
     networks:
       - postgresSite
+  trelloGolangApi:
+    depends_on:
+      - postgresDatabase
+    image: trello-golang-api
+    restart: always
+    ports:
+      - '4011:80'
+    networks:
+      - postgresSite
+
+
 
 networks:
   postgresSite:

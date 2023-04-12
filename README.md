@@ -1,5 +1,5 @@
 # Golang
 
-'''bash
+```bash
     go run main.go
-'''
+```
