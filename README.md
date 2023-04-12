@@ -6,6 +6,7 @@
 
 ## go mod
 ```go
+    go mod
 ```
 
 ### - approach 1
